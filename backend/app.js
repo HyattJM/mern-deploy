@@ -85,8 +85,50 @@ app.get('/contacts/:id', async (req, res) => {
 });
 
 // Route for Update a Contact (Update)
+app.put('/contacts/:id', async (req, res) => {
+  try {
+    if (
+      !req.body.name ||
+      !req.body.phoneNumber ||
+      !req.body.email
+    ) {
+      return res.status(400).send({
+        message: 'Send all required fields: name, phoneNumber, email',
+      });
+    }
+
+    const { id } = req.params;
+
+    const result = await Contact.findByIdAndUpdate(id, req.body);
+
+    if (!result) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    return res.status(404).json({ message: 'Contact updated successfully' });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message }); 
+  }
+});
 
 // Route for Delete a Contact (Delete)
+app.delete('/contacts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await Contact.findByIdAndDelete(id);
+
+    if(!result) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    return res.status(200).send({ message: 'Contact deleted successfully' });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });    
+  }
+});
 
 mongoose
   .connect(mongoDBURL)
